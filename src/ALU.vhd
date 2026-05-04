@@ -18,7 +18,6 @@
 -- 
 ----------------------------------------------------------------------------------
 
-
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
@@ -65,7 +64,7 @@ begin
             when "001" => --SUB
                 res_uns := a_uns - b_uns;
                 --checking overflow (pos-neg=neg)or(neg-pos=pos)
-                V := (i_A(7) and not(i_B(7)) and not res_uns(7)) or (not(i_A(7)) and (i_B(7)) and res_uns(7));
+                V := (i_A(7) xor i_B(7)) and (i_A(7) xor res_8(7));
             when "010" => --AND
                 res_8 := i_A and i_B;
                 res_uns := unsigned('0' & res_8);
@@ -83,10 +82,11 @@ begin
         if res_8 = x"00" then --all 8 bits of result are zero
             Z:='1';
         else
-            z:='0';
+            Z:='0';
         end if;
         --finally
         o_result <= res_8;
         o_flags <= N & Z & C & V;
     end process; 
 end Behavioral;
+
