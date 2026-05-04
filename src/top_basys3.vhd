@@ -107,7 +107,7 @@ architecture top_basys3_arch of top_basys3 is
     signal o_sign_sig       : std_logic;
     signal o_hund_sig, o_tens_sig, o_ones_sig : std_logic_vector(3 downto 0);
     signal decoded_seg      : std_logic_vector(6 downto 0);
-
+    signal D3_cacl_sig : std_logic_vector(3 downto 0);
 
 begin
 
@@ -161,16 +161,16 @@ begin
     twoscomp_inst : twos_comp
         port map(i_bin => display_val, o_sign => o_sign_sig, 
                  o_hund => o_hund_sig, o_tens => o_tens_sig, o_ones => o_ones_sig);
-
+    D3_cacl_sig <= ("000" & o_sign_sig);
     -- 5. Seven Segment Display & TDM
     clock_divider_inst: clock_divider
         generic map (k_DIV => 100000) 
         port map(i_clk => clk, i_reset => btnU, o_clk => o_clk_tdm);
-
+    
     TDM_inst : TDM4
         port map(i_clk => o_clk_tdm, 
                  i_reset => btnU,
-                 i_D3 => ("000" & o_sign_sig), 
+                 i_D3 =>D3_calc_sig, 
                  i_D2 => o_hund_sig,
                  i_D1 => o_tens_sig, i_D0 => o_ones_sig,
                  o_data => tdm_data, o_sel => tdm_sel);
