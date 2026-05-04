@@ -52,6 +52,7 @@ begin
     begin
         res_uns := (others => '0');
         V := '0';
+        Z := '0';
         a_uns := unsigned ('0' & i_A);--adding 0 to start to make i_A 9 bit, 9th bit tracks carry
         b_uns := unsigned ('0' & i_B);
     

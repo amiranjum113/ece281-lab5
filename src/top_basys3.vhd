@@ -181,7 +181,6 @@ begin
            decoded_seg;
 
     an <= "1111" when cycle(0) = '1' else tdm_sel; -- Blank all digits in Idle state
-
     -- 6. LED Outputs
     led(3 downto 0)   <= cycle; 
     led(15 downto 12) <= alu_flags; 
