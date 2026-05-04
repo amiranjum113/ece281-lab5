@@ -107,9 +107,10 @@ architecture top_basys3_arch of top_basys3 is
     signal o_sign_sig       : std_logic;
     signal o_hund_sig, o_tens_sig, o_ones_sig : std_logic_vector(3 downto 0);
     signal decoded_seg      : std_logic_vector(6 downto 0);
+    signal flags_reg : std_logic_vector(3 downto 0) := (others => '0');
 
 begin
-
+    alu_flags <= "0000";
     -- 1. Button Debouncer
     debounce_inst : button_debounce
         port map(
@@ -118,6 +119,17 @@ begin
             button => btnC,
             action => w_btnC_debounced 
         );
+    
+    process(clk, btnU)
+begin
+    if btnU = '1' then
+        flags_reg <= (others => '0');
+    elsif rising_edge(clk) then
+        if cycle = "1000" then  -- ONLY when showing result
+            flags_reg <= alu_flags;
+        end if;
+    end if;
+end process;
 
     -- 2. FSM
     FSM_inst : controller_fsm
@@ -183,7 +195,7 @@ begin
     an <= "1111" when cycle(0) = '1' else tdm_sel; -- Blank all digits in Idle state
     -- 6. LED Outputs
     led(3 downto 0)   <= cycle; 
-    led(15 downto 12) <= alu_flags; 
+    led(15 downto 12) <= flags_reg; 
     led(11 downto 4)  <= (others => '0');    
     
 end top_basys3_arch;
