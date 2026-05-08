@@ -48,7 +48,9 @@ begin
         case i_op is
             when "000" => -- ADD
                 res_uns := a_uns + b_uns;
-                res_8 := std_logic_vector(res_uns(7 downto 0)); -- Assign here
+                res_8 := std_logic_vector(res_uns(7 downto 0));
+                --logic for overflow
+                --if (positives add and we get negative) or (negatives add and we get positive) 
                 V := (i_A(7) and i_B(7) and not res_8(7)) or (not(i_A(7)) and not(i_B(7)) and res_8(7));
              
             when "001" => -- SUB
@@ -70,15 +72,14 @@ begin
         end case;
 
         -- FLAG EXTRACTION
-        -- This is the only logic change needed for the testbench
         if i_op = "001" then 
-            C := not res_uns(8); -- Not-Borrow for SUB
+            C := not res_uns(8); --Not-Borrow carry logic for subtraction
         else
-            C := res_uns(8);     -- Normal Carry for others
+            C := res_uns(8);     --Normal carry for other operations
         end if;
-
-        N := res_8(7);
-        
+        --negative flag logic (MSB = 1)
+        N := res_8(7);   
+        --zero flag logic (if number is 0 for all bits)   
         if res_8 = x"00" then 
             Z := '1';
         else

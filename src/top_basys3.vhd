@@ -130,18 +130,16 @@ begin
             o_cycle => cycle
         );
 
--- 3. Register Storage: Triggered by the SAME signal as the FSM
+-- 3. Register Storage
     process(w_btnC_debounced, btnU)
     begin
-        if btnU = '1' then
+        if btnU = '1' then --reset if btnU pressed
             regA <= (others => '0');
             regB <= (others => '0');
-        elsif rising_edge(w_btnC_debounced) then
-            -- We capture based on the state we are CURRENTLY in
-            -- as we are being triggered to leave it.
-            if cycle = "0001" then     -- Leaving S0
+        elsif rising_edge(w_btnC_debounced) then --when btnC is pressed
+            if cycle = "0001" then     --in state 0 the value on switches goes to regA
                 regA <= sw;
-            elsif cycle = "0010" then  -- Leaving S1
+            elsif cycle = "0010" then  --in state 1 the value on switches goes to regB
                 regB <= sw;
             end if;
         end if;
@@ -149,12 +147,16 @@ begin
     
     -- 4. ALU & Display Path Logic
     ALU_inst : ALU
-        port map(i_A => regA, i_B => regB, i_op => sw(2 downto 0), 
-                 o_result => alu_result, o_flags => alu_flags);
+        port map(i_A => regA, 
+                i_B => regB, 
+                i_op => sw(2 downto 0), 
+                o_result => alu_result, 
+                o_flags => alu_flags
+                );
 
     display_val <= (others => '0') when cycle = "0001" else -- S0: Blank
-                   regA           when cycle = "0010" else -- S1: Show locked A
-                   regB           when cycle = "0100" else -- S2: Show locked B
+                   regA           when cycle = "0010" else -- S1: Show A
+                   regB           when cycle = "0100" else -- S2: Show B
                    alu_result     when cycle = "1000" else -- S3: Show Result
                    (others => '0');
 
